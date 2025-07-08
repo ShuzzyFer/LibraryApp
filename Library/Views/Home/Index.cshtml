@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Библиотека";
+}
+
+<div class="text-center my-5">
+    <h1 class="display-4">Добро пожаловать в библиотеку</h1>
+    <p class="lead">Найдите книги, которые вам понравятся!</p>
+</div>
+
+<!-- Описание библиотеки -->
+<div class="my-5">
+    <h3>О нашей библиотеке</h3>
+    <p>
+        Наша библиотека в Минске предлагает широкий выбор книг для всех возрастов и интересов. 
+        От классической литературы до современных бестселлеров — у нас вы найдёте всё! 
+        Присоединяйтесь к нам, чтобы исследовать мир книг, бронировать их онлайн и получать персональные рекомендации.
+    </p>
+</div>
+
+<!-- Яндекс.Карта -->
+<div class="my-5">
+    <h3>Где нас найти</h3>
+    <p>Адрес: г. Минск, Слободская 95</p>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+</div>
+
+<!-- Персональные рекомендации -->
+@if (User.Identity.IsAuthenticated)
+{
+    <h3 class="mt-5">Рекомендации для вас</h3>
+    <div class="row">
+        @{
+            var recommendedBooks = ViewBag.RecommendedBooks as List<Library.Models.Book> ?? new List<Library.Models.Book>();
+        }
+        @foreach (var book in recommendedBooks)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.Title" style="height: 400px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@book.Title</h5>
+                        <p class="card-text"><strong>Автор:</strong> @book.Author</p>
+                        <p class="card-text"><strong>Оценка:</strong> @(book.Ratings.Any() ? book.AverageRating.ToString("F1") : "Нет оценок")</p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!recommendedBooks.Any())
+        {
+            <p class="text-center">Оцените или забронируйте книги, чтобы получить рекомендации!</p>
+        }
+    </div>
+}
+
+<!-- Популярные за месяц -->
+<h3 class="mt-5">Популярные за последний месяц</h3>
+<div class="row">
+    @{
+        var recentPopularBooks = ViewBag.RecentPopularBooks as List<Library.Models.Book> ?? new List<Library.Models.Book>();
+    }
+    @foreach (var book in recentPopularBooks)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.Title" style="height: 400px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text"><strong>Автор:</strong> @book.Author</p>
+                    <p class="card-text"><strong>Оценка:</strong> @(book.Ratings.Any() ? book.AverageRating.ToString("F1") : "Нет оценок")</p>
+                </div>
+                <div class="card-footer">
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (!recentPopularBooks.Any())
+    {
+        <p class="text-center">Пока нет популярных книг за месяц.</p>
+    }
+</div>
+
+<!-- Самые популярные -->
+<h3 class="mt-5">Самые популярные книги</h3>
+<div class="row">
+    @{
+        var topRatedBooks = ViewBag.TopRatedBooks as List<Library.Models.Book> ?? new List<Library.Models.Book>();
+    }
+    @foreach (var book in topRatedBooks)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.Title" style="height: 400px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text"><strong>Автор:</strong> @book.Author</p>
+                    <p class="card-text"><strong>Оценка:</strong> @(book.Ratings.Any() ? book.AverageRating.ToString("F1") : "Нет оценок")</p>
+                </div>
+                <div class="card-footer">
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (!topRatedBooks.Any())
+    {
+        <p class="text-center">Пока нет популярных книг.</p>
+    }
+</div>
+
+<!-- Призыв к действию -->
+<div class="text-center my-5">
+    <a asp-controller="Books" asp-action="Index" class="btn btn-lg btn-primary">Перейти к каталогу</a>
+</div>
+
+@section Scripts {
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=bb443cb4-15f4-4056-8b1f-7a0f45d47442&lang=ru_RU"></script>
+    <script>
+        ymaps.ready(init);
+        function init() {
+            var myMap = new ymaps.Map("map", {
+                center: [53.849, 27.445], // Минск, Слободская 95
+                zoom: 15
+            });
+            var myPlacemark = new ymaps.Placemark([53.848, 27.446], {
+                hintContent: "Библиотека",
+                balloonContent: "<h5>Библиотека</h5><p>г. Минск, Слободская 95</p>"
+            }, {
+                preset: "islands#blueBookIcon"
+            });
+            myMap.geoObjects.add(myPlacemark);
+        }
+    </script>
+}

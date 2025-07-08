@@ -1,0 +1,61 @@
+﻿@model EditUserViewModel
+
+<h2>Редактировать пользователя</h2>
+
+<form asp-action="EditUser" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label>Имя</label>
+        <input asp-for="Name" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" required />
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="form-group">
+            <label>Роли</label>
+            <select multiple name="selectedRoles" class="form-control">
+                @foreach (var role in ViewBag.AllRoles)
+                {
+                    if (Model.Roles.Contains(role))
+                    {
+                        <option value="@role" selected>@role</option>
+                    }
+                    else
+                    {
+                        <option value="@role">@role</option>
+                    }
+                }
+            </select>
+            <small class="form-text text-muted">Удерживайте Ctrl для выбора нескольких ролей.</small>
+        </div>
+    }
+
+    <h3>Книги пользователя</h3>
+    <div class="form-group">
+        <label>Поиск книг</label>
+        <input name="bookSearchQuery" class="form-control" placeholder="Поиск по названию или автору" value="@ViewBag.BookSearchQuery" />
+        <button type="submit" class="btn btn-primary mt-2">Найти</button>
+    </div>
+    <div class="form-group">
+        <label>Выданные книги</label>
+        <select multiple name="selectedBooks" class="form-control" size="10">
+            @foreach (var book in ViewBag.AllBooks)
+            {
+                var isPossessed = Model.PossessedBooks.Any(pb => pb.Id == book.Id);
+                <option value="@book.Id" selected="@(isPossessed ? "selected" : null)">
+                    @book.Title - @book.Author (Доступно: @book.AvailableCopies)
+                </option>
+            }
+        </select>
+        <small class="form-text text-muted">
+            Удерживайте Ctrl для выбора нескольких книг. Выберите книги для выдачи или снимите выбор для возврата.
+        </small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-action="@(User.IsInRole("Admin") ? "Users" : "ModeratorPanel")" class="btn btn-secondary">Назад</a>
+</form>

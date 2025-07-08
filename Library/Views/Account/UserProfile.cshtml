@@ -1,0 +1,70 @@
+﻿<h2>Профиль пользователя: @ViewBag.UserName</h2>
+
+<p><strong>О себе:</strong> @(ViewBag.Bio ?? "Не указано")</p>
+<p><strong>Любимые жанры:</strong> @(ViewBag.FavoriteGenres ?? "Не указаны")</p>
+
+<h3>Любимые книги</h3>
+@if (ViewBag.FavoriteBooks != null && ViewBag.FavoriteBooks.Count > 0)
+{
+    <table class="table">
+        <tbody>
+        @foreach (var fav in ViewBag.FavoriteBooks)
+        {
+            <tr>
+                <td><a asp-controller="Books" asp-action="Details" asp-route-id="@fav.Book.Id">@fav.Book.Title</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Нет любимых книг.</p>
+}
+
+<h3>Брошенные книги</h3>
+@if (ViewBag.DroppedBooks != null && ViewBag.DroppedBooks.Count > 0)
+{
+    <table class="table">
+        <tbody>
+        @foreach (var drop in ViewBag.DroppedBooks)
+        {
+            <tr>
+                <td><a asp-controller="Books" asp-action="Details" asp-route-id="@drop.Book.Id">@drop.Book.Title</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Нет брошенных книг.</p>
+}
+
+<h3>Комментарии</h3>
+@if (ViewBag.Comments != null && ViewBag.Comments.Count > 0)
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Книга</th>
+            <th>Дата</th>
+            <th>Комментарий</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var comment in ViewBag.Comments)
+        {
+            <tr>
+                <td><a asp-controller="Books" asp-action="Details" asp-route-id="@comment.Book.Id">@comment.Book.Title</a></td>
+                <td>@comment.CreatedAt.ToShortDateString()</td>
+                <td>@comment.Text</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Комментариев нет.</p>
+}

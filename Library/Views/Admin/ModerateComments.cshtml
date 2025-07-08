@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Comment>
+
+<h2>Модерация комментариев</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Пользователь</th>
+        <th>Книга</th>
+        <th>Текст</th>
+        <th>Жалобы</th>
+        <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var comment in Model)
+    {
+        <tr>
+            <td>@comment.User.Name</td>
+            <td><a asp-controller="Books" asp-action="Details" asp-route-id="@comment.Book.Id">@comment.Book.Title</a></td>
+            <td>@comment.Text</td>
+            <td>@comment.ReportCount</td>
+            <td>
+                <form asp-action="DeleteComment" method="post" style="display:inline;">
+                    <input type="hidden" name="commentId" value="@comment.Id" />
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить комментарий?');">Удалить</button>
+                </form>
+                <form asp-action="ClearReports" method="post" style="display:inline;">
+                    <input type="hidden" name="commentId" value="@comment.Id" />
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Очистить жалобы?');">Очистить жалобы</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

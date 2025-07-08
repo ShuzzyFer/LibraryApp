@@ -1,0 +1,31 @@
+﻿@model List<Comment>
+
+<h2>Управление комментариями</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Книга</th>
+            <th>Пользователь</th>
+            <th>Текст</th>
+            <th>Дата</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var comment in Model)
+        {
+            <tr>
+                <td><a asp-controller="Books" asp-action="Details" asp-route-id="@comment.Book.Id">@comment.Book.Title</a></td>
+                <td>@comment.User.Name</td>
+                <td>@comment.Text</td>
+                <td>@comment.CreatedAt.ToShortDateString()</td>
+                <td>
+                    <form asp-action="DeleteComment" asp-route-id="@comment.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить комментарий?');">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

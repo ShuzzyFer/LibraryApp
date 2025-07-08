@@ -1,0 +1,35 @@
+﻿<h2>Добавить книгу</h2>
+
+<form asp-action="CreateBook" method="post">
+    <div class="form-group">
+        <label>Название</label>
+        <input name="title" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Автор</label>
+        <input name="author" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Жанр</label>
+        <input name="genre" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Описание</label>
+        <textarea name="description" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label>Общее количество экземпляров</label>
+        <input name="totalCopies" class="form-control" type="number" required />
+    </div>
+    <div class="form-group">
+        <label>Доступные экземпляры</label>
+        <input name="availableCopies" class="form-control" type="number" required />
+    </div>
+    <div class="form-group">
+        <label>URL обложки</label>
+        <input name="coverImageUrl" class="form-control" />
+    </div>
+    <div class="text-danger" id="validationSummary"></div>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+    <a asp-action="Books" class="btn btn-secondary">Отмена</a>
+</form>

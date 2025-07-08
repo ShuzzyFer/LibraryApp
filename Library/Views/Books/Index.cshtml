@@ -1,0 +1,113 @@
+﻿@model IEnumerable<Book>
+
+<h2>Книги</h2>
+
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Поиск (по названию или автору):</label>
+            <input name="searchQuery" class="form-control" value="@ViewBag.SearchQuery" placeholder="Введите название или автора" />
+        </div>
+        <div class="col-md-4">
+            <label>Фильтр:</label>
+            <select name="filterType" class="form-control" onchange="this.form.submit()">
+                <option value="">Без фильтра</option>
+                <option value="genre" selected="@(ViewBag.FilterType == "genre")">По жанру</option>
+                <option value="tag" selected="@(ViewBag.FilterType == "tag")">По тегу</option>
+                <option value="rating" selected="@(ViewBag.FilterType == "rating")">По рейтингу</option>
+                <option value="ratingCount" selected="@(ViewBag.FilterType == "ratingCount")">По количеству оценок</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            @if (ViewBag.FilterType == "genre")
+            {
+                <label>Жанры:</label>
+                <select multiple name="genreIds" class="form-control">
+                    @foreach (var genre in ViewBag.AllGenres)
+                    {
+                        if (ViewBag.GenreIds.Contains(genre.Id))
+                        {
+                            <option value="@genre.Id" selected>@genre.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
+                    }
+                </select>
+            }
+            else if (ViewBag.FilterType == "tag")
+            {
+                <label>Теги:</label>
+                <select multiple name="tagIds" class="form-control">
+                    @foreach (var tag in ViewBag.AllTags)
+                    {
+                        if (ViewBag.TagIds.Contains(tag.Id))
+                        {
+                            <option value="@tag.Id" selected>@tag.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@tag.Id">@tag.Name</option>
+                        }
+                    }
+                </select>
+            }
+            else if (ViewBag.FilterType == "rating")
+            {
+                <label>Минимальная оценка:</label>
+                <input name="minRating" class="form-control" type="number" step="0.1" min="0" max="5" value="@ViewBag.MinRating" />
+            }
+            else if (ViewBag.FilterType == "ratingCount")
+            {
+                <label>Минимальное количество оценок:</label>
+                <input name="minRatingCount" class="form-control" type="number" min="0" value="@ViewBag.MinRatingCount" />
+            }
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Применить</button>
+</form>
+
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.Title" style="height: 400px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text"><strong>Автор:</strong> @book.Author</p>
+                    <p class="card-text"><strong>Жанры:</strong> @string.Join(", ", book.BookGenres.Select(bg => bg.Genre.Name))</p>
+                    <p class="card-text"><strong>Теги:</strong> @string.Join(", ", book.BookTags.Select(bt => bt.Tag.Name))</p>
+                    <p class="card-text"><strong>Оценка:</strong> @(book.Ratings.Any() ? book.AverageRating.ToString("F1") : "Нет оценок") (@book.Ratings.Count оценок)</p>
+                    <p class="card-text"><strong>Доступно:</strong> @book.AvailableCopies / @book.TotalCopies</p>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-searchQuery="@ViewBag.SearchQuery" asp-route-filterType="@ViewBag.FilterType" asp-route-genreIds="@string.Join(",", ViewBag.GenreIds)" asp-route-tagIds="@string.Join(",", ViewBag.TagIds)" asp-route-minRating="@ViewBag.MinRating" asp-route-minRatingCount="@ViewBag.MinRatingCount" asp-route-page="@(ViewBag.Page - 1)" asp-route-pageSize="@ViewBag.PageSize">Предыдущая</a>
+        </li>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(ViewBag.Page == i ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-searchQuery="@ViewBag.SearchQuery" asp-route-filterType="@ViewBag.FilterType" asp-route-genreIds="@string.Join(",", ViewBag.GenreIds)" asp-route-tagIds="@string.Join(",", ViewBag.TagIds)" asp-route-minRating="@ViewBag.MinRating" asp-route-minRatingCount="@ViewBag.MinRatingCount" asp-route-page="@i" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+            </li>
+        }
+        <li class="page-item @(ViewBag.Page == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-searchQuery="@ViewBag.SearchQuery" asp-route-filterType="@ViewBag.FilterType" asp-route-genreIds="@string.Join(",", ViewBag.GenreIds)" asp-route-tagIds="@string.Join(",", ViewBag.TagIds)" asp-route-minRating="@ViewBag.MinRating" asp-route-minRatingCount="@ViewBag.MinRatingCount" asp-route-page="@(ViewBag.Page + 1)" asp-route-pageSize="@ViewBag.PageSize">Следующая</a>
+        </li>
+    </ul>
+</nav>
+
+@if (!Model.Any())
+{
+    <p class="text-center">Книги не найдены.</p>
+}

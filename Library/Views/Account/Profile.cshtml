@@ -1,0 +1,175 @@
+﻿<h2>Профиль пользователя: @ViewBag.UserName</h2>
+<a asp-action="EditProfile" class="btn btn-warning mb-3">Редактировать профиль</a>
+
+<p><strong>О себе:</strong> @(ViewBag.Bio ?? "Не указано")</p>
+<p><strong>Любимые жанры:</strong> @(ViewBag.FavoriteGenres ?? "Не указаны")</p>
+
+<h3>История бронирований</h3>
+@if (ViewBag.Reservations != null && ViewBag.Reservations.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Книга</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in ViewBag.Reservations)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@reservation.Book.Id">@reservation.Book.Title</a></td>
+                    <td>@reservation.StartDate.ToShortDateString()</td>
+                    <td>@reservation.EndDate.ToShortDateString()</td>
+                    <td>@reservation.Status</td>
+                    <td>
+                        @if (reservation.Status == "Active")
+                        {
+                            <form asp-controller="Books" asp-action="CancelReservation" method="post" style="display:inline;">
+                                <input type="hidden" name="reservationId" value="@reservation.Id" />
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Отменить бронирование?');">Отменить</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>У вас нет бронирований.</p>
+}
+
+
+
+<h3>Любимые книги</h3>
+@if (ViewBag.FavoriteBooks != null && ViewBag.FavoriteBooks.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Книга</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var fav in ViewBag.FavoriteBooks)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@fav.Book.Id">@fav.Book.Title</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>У вас нет любимых книг.</p>
+}
+
+<h3>Брошенные книги</h3>
+@if (ViewBag.DroppedBooks != null && ViewBag.DroppedBooks.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Книга</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var drop in ViewBag.DroppedBooks)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@drop.Book.Id">@drop.Book.Title</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>У вас нет брошенных книг.</p>
+}
+
+<h3>Взятые книги</h3>
+@if (ViewBag.PossessedBooks != null && ViewBag.PossessedBooks.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Книга</th>
+                <th>Дата взятия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var possession in ViewBag.PossessedBooks)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@possession.Book.Id">@possession.Book.Title</a></td>
+                    <td>@possession.TakenDate.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>У вас нет взятых книг.</p>
+}
+
+<h3>Ваши комментарии</h3>
+@if (ViewBag.Comments != null && ViewBag.Comments.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Книга</th>
+                <th>Дата</th>
+                <th>Комментарий</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comment in ViewBag.Comments)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@comment.Book.Id">@comment.Book.Title</a></td>
+                    <td>@comment.CreatedAt.ToShortDateString()</td>
+                    <td>@comment.Text</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Вы пока не оставляли комментариев.</p>
+}
+
+<h3>Ваши оценки</h3>
+@if (ViewBag.Ratings != null && ViewBag.Ratings.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Книга</th>
+                <th>Оценка</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rating in ViewBag.Ratings)
+            {
+                <tr>
+                    <td><a asp-controller="Books" asp-action="Details" asp-route-id="@rating.Book.Id">@rating.Book.Title</a></td>
+                    <td>@rating.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Вы пока не ставили оценок.</p>
+}

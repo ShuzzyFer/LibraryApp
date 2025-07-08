@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Library</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">Library</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Books" asp-action="Index">Книги</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Guide">Инструкция</a>
+                    </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="Index">Админ-панель</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Moderator"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Admin" asp-action="ModeratorPanel">Модератор</a>
+                        </li>
+                    }
+                </ul>
+                <ul class="navbar-nav">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown">
+                                Уведомления
+                                @if (ViewBag.UnreadNotificationCount > 0)
+                                {
+                                    <span class="badge bg-danger">@ViewBag.UnreadNotificationCount</span>
+                                }
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                                @{
+                                    var notifications = ViewBag.Notifications as List<Library.Models.Notification> ?? new List<Library.Models.Notification>();
+                                }
+                                @if (notifications.Count > 0)
+                                {
+                                    foreach (var notification in notifications)
+                                    {
+                                        <a class="dropdown-item @(notification.IsRead ? "text-muted" : "")" 
+                                           href="@Url.Action("Details", "Books", new { id = notification.BookId })"
+                                           onclick="markAsRead(@notification.Id)">
+                                            @notification.Message
+                                            <small class="d-block text-muted">@notification.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="dropdown-item text-muted">Нет уведомлений</span>
+                                }
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Profile">Профиль (@User.Identity.Name)</a>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="nav-link btn btn-link text-white">Выйти</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">Войти</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Register">Регистрация</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            © 2025 - Library
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function markAsRead(notificationId) {
+            $.post('/Books/MarkNotificationAsRead', { notificationId: notificationId }, function () {
+                location.reload();
+            });
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

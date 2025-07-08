@@ -1,0 +1,63 @@
+﻿@model Book
+
+<h2>Редактировать книгу</h2>
+
+<form asp-action="EditBook" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label>Название</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Автор</label>
+        <input asp-for="Author" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Описание</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Общее количество копий</label>
+        <input asp-for="TotalCopies" class="form-control" type="number" min="1" required />
+    </div>
+    <div class="form-group">
+        <label>URL обложки</label>
+        <input asp-for="CoverImageUrl" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Жанры</label>
+        <select multiple name="genreIds" class="form-control">
+            @foreach (var genre in ViewBag.AllGenres)
+            {
+                if (Model.BookGenres.Any(bg => bg.GenreId == genre.Id))
+                {
+                    <option value="@genre.Id" selected>@genre.Name</option>
+                }
+                else
+                {
+                    <option value="@genre.Id">@genre.Name</option>
+                }
+            }
+        </select>
+        <small class="form-text text-muted">Удерживайте Ctrl для выбора нескольких жанров. Оставьте пустым, чтобы удалить все жанры.</small>
+    </div>
+    <div class="form-group">
+        <label>Теги</label>
+        <select multiple name="tagIds" class="form-control">
+            @foreach (var tag in ViewBag.AllTags)
+            {
+                if (Model.BookTags.Any(bt => bt.TagId == tag.Id))
+                {
+                    <option value="@tag.Id" selected>@tag.Name</option>
+                }
+                else
+                {
+                    <option value="@tag.Id">@tag.Name</option>
+                }
+            }
+        </select>
+        <small class="form-text text-muted">Удерживайте Ctrl для выбора нескольких тегов. Оставьте пустым, чтобы удалить все теги.</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-action="Books" class="btn btn-secondary">Назад</a>
+</form>

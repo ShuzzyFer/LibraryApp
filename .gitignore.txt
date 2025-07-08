@@ -1,0 +1,66 @@
+# Visual Studio / Visual Studio Code
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vscode/
+*.vs/
+
+# Сборки и выходные файлы
+bin/
+obj/
+out/
+dist/
+*.dll
+*.exe
+*.pdb
+
+# Зависимости
+wwwroot/lib/
+node_modules/
+packages/
+
+# Кэши и временные файлы
+*.cache
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Файлы конфигурации с секретами
+appsettings.json
+appsettings.*.json
+*.config
+*.env
+
+# Файлы базы данных
+*.mdf
+*.ldf
+*.sdf
+
+# Папки для NuGet
+*.nupkg
+.nuget/
+
+# Тестовые файлы
+TestResults/
+*.trx
+*.xml
+
+# Папки и файлы, специфичные для macOS
+.DS_Store
+
+# Папки и файлы, специфичные для Rider
+.idea/
+
+# Прочие
+Thumbs.db
+desktop.ini
+
+# Исключения для нужных файлов
+!wwwroot/lib/bootstrap/
+!wwwroot/lib/jquery/
+!wwwroot/js/site.js
+!wwwroot/css/site.css

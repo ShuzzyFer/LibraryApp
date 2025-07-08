@@ -1,0 +1,48 @@
+﻿@model Book
+
+<h2>Добавить книгу</h2>
+
+<form asp-action="AddBook" method="post">
+    <div class="form-group">
+        <label>Название</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Автор</label>
+        <input asp-for="Author" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Описание</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Общее количество копий</label>
+        <input asp-for="TotalCopies" class="form-control" type="number" min="1" required />
+    </div>
+    <div class="form-group">
+        <label>URL обложки</label>
+        <input asp-for="CoverImageUrl" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Жанры</label>
+        <select multiple name="genreIds" class="form-control">
+            @foreach (var genre in ViewBag.AllGenres)
+            {
+                <option value="@genre.Id">@genre.Name</option>
+            }
+        </select>
+        <small class="form-text text-muted">Удерживайте Ctrl для выбора нескольких жанров.</small>
+    </div>  
+    <div class="form-group">
+        <label>Теги</label>
+        <select multiple name="tagIds" class="form-control">
+            @foreach (var tag in ViewBag.AllTags)
+            {
+                <option value="@tag.Id">@tag.Name</option>
+            }
+        </select>
+        <small class="form-text text-muted">Удерживайте Ctrl для выбора нескольких тегов.</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Добавить</button>
+    <a asp-action="Books" class="btn btn-secondary">Назад</a>
+</form>

@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Инструкция";
+}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Инструкция по использованию библиотеки</h1>
+    
+    <div class="accordion" id="guideAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingRegister">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegister">
+                    1. Регистрация и вход
+                </button>
+            </h2>
+            <div id="collapseRegister" class="accordion-collapse collapse show" data-bs-parent="#guideAccordion">
+                <div class="accordion-body">
+                    <p>Чтобы начать пользоваться библиотекой, зарегистрируйтесь, нажав "Регистрация" в шапке сайта. Укажите имя, email и пароль. После регистрации войдите через "Войти".</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSearch">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSearch">
+                    2. Поиск книг
+                </button>
+            </h2>
+            <div id="collapseSearch" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                <div class="accordion-body">
+                    <p>Перейдите в раздел "Книги" для просмотра каталога. Используйте поиск по названию или автору. Кликните на книгу, чтобы узнать подробности.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingReserve">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReserve">
+                    3. Бронирование книг
+                </button>
+            </h2>
+            <div id="collapseReserve" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                <div class="accordion-body">
+                    <p>На странице книги нажмите "Забронировать", если книга доступна. Если её нет, выберите "Напомнить при появлении", чтобы получить уведомление.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingRatings">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRatings">
+                    4. Оценки и комментарии
+                </button>
+            </h2>
+            <div id="collapseRatings" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                <div class="accordion-body">
+                    <p>На странице книги выберите оценку (1–5) и оставьте комментарий. Вы также можете лайкать, дизлайкать или жаловаться на чужие комментарии.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingNotifications">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotifications">
+                    5. Уведомления
+                </button>
+            </h2>
+            <div id="collapseNotifications" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                <div class="accordion-body">
+                    <p>Проверьте уведомления в шапке сайта (иконка с цифрой). Когда книга станет доступной, вы получите сообщение на сайте и по email.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>

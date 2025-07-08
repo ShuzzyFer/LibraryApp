@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Book>
+
+<h2>Управление книгами</h2>
+
+<form asp-action="Books" method="get" class="mb-3">
+    <div class="input-group">
+        <input name="searchQuery" class="form-control" placeholder="Поиск по названию или автору" value="@ViewBag.SearchQuery" />
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </div>
+</form>
+
+<a asp-action="AddBook" class="btn btn-success mb-3">Добавить книгу</a>
+
+<div class="row">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.Title" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@book.Title</h5>
+                    <p class="card-text"><strong>Автор:</strong> @book.Author</p>
+                    <p class="card-text"><strong>Жанры:</strong> @(book.BookGenres != null && book.BookGenres.Any() ? string.Join(", ", book.BookGenres.Select(bg => bg.Genre?.Name ?? "Неизвестный жанр")) : "Нет жанров")</p>
+                    <p class="card-text"><strong>Теги:</strong> @(book.BookTags != null && book.BookTags.Any() ? string.Join(", ", book.BookTags.Select(bt => bt.Tag?.Name ?? "Неизвестный тег")) : "Нет тегов")</p>
+                    <p class="card-text"><strong>Оценка:</strong> @(book.Ratings != null && book.Ratings.Any() ? book.AverageRating.ToString("F1") : "Нет оценок") (@(book.Ratings?.Count ?? 0) оценок)</p>
+                    <p class="card-text"><strong>Доступно:</strong> @book.AvailableCopies / @book.TotalCopies</p>
+                </div>
+                <div class="card-footer">
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn btn-primary">Подробнее</a>
+                    <a asp-action="EditBook" asp-route-id="@book.Id" class="btn btn-warning">Редактировать</a>
+                    <form asp-action="DeleteBook" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@book.Id" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить книгу?');">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Books" asp-route-searchQuery="@ViewBag.SearchQuery" asp-route-page="@(ViewBag.Page - 1)" asp-route-pageSize="@ViewBag.PageSize">Предыдущая</a>
+        </li>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(ViewBag.Page == i ? "active" : "")">
+                <a class="page-link" asp-action="Books" asp-route-searchQuery="@ViewBag.SearchQuery" asp-route-page="@i" asp-route-pageSize="@ViewBag.PageSize">@i</a>
+            </li>
+        }
+        <li class="page-item @(ViewBag.Page == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Books" asp-route-searchQuery="@ViewBag.SearchQuery" asp-route-page="@(ViewBag.Page + 1)" asp-route-pageSize="@ViewBag.PageSize">Следующая</a>
+        </li>
+    </ul>
+</nav>
+
+@if (!Model.Any())
+{
+    <p class="text-center">Книги не найдены.</p>
+}

@@ -1,0 +1,165 @@
+﻿@model Library.Models.Book
+
+<h2>@Model.Title</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@Model.CoverImageUrl" alt="@Model.Title" class="img-fluid" style="max-height: 300px; object-fit: cover;" />
+    </div>
+    <div class="col-md-8">
+        <dl class="row">
+            <dt class="col-sm-3">Автор</dt>
+            <dd class="col-sm-9">@Model.Author</dd>
+            <dt class="col-sm-3">Жанры</dt>
+            <dd class="col-sm-9">@string.Join(", ", Model.BookGenres.Select(bg => bg.Genre.Name))</dd>
+            <dt class="col-sm-3">Теги</dt>
+            <dd class="col-sm-9">@string.Join(", ", Model.BookTags.Select(bt => bt.Tag.Name))</dd>
+            <dt class="col-sm-3">Описание</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+            <dt class="col-sm-3">Доступно / Всего</dt>
+            <dd class="col-sm-9">@Model.AvailableCopies / @Model.TotalCopies</dd>
+            <dt class="col-sm-3">Средняя оценка</dt>
+            <dd class="col-sm-9">@(Model.Ratings.Any() ? Model.AverageRating.ToString("F1") : "Нет оценок") (основано на @ViewBag.RatingsCount оценках)</dd>
+        </dl>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="mb-3">
+                <form asp-action="Rate" method="post" class="d-inline">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <label>Ваша оценка:</label>
+                    <select name="value" class="form-control d-inline w-auto">
+                        <option value="0" selected="@(ViewBag.UserRating == 0)">Не выбрано</option>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <option value="@i" selected="@(ViewBag.UserRating == i)">@i</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary">Оценить</button>
+                </form>
+            </div>
+
+            <div class="mb-3">
+                @if (ViewBag.IsFavorite)
+                {
+                    <form asp-action="AddToFavorites" method="post" class="d-inline">
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-warning">Убрать из избранного</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="AddToFavorites" method="post" class="d-inline">
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-success">Добавить в избранное</button>
+                    </form>
+                }
+
+                @if (ViewBag.IsDropped)
+                {
+                    <form asp-action="AddToDropped" method="post" class="d-inline">
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-warning">Убрать из брошенных</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="AddToDropped" method="post" class="d-inline">
+                        <input type="hidden" name="bookId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger">Добавить в брошенные</button>
+                    </form>
+                }
+            </div>
+
+            @if (ViewBag.IsReservedByUser)
+            {
+                <p class="text-success">Книга забронирована вами.</p>
+                <form asp-action="CancelReservation" method="post" class="d-inline">
+                    <input type="hidden" name="reservationId" value="@ViewBag.ReservationId" />
+                    <button type="submit" class="btn btn-danger">Отменить бронь</button>
+                </form>
+            }
+            else if (Model.AvailableCopies > 0)
+            {
+                <form asp-action="Reserve" method="post" class="d-inline">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary">Забронировать</button>
+                </form>
+            }
+            else
+            {
+                <p class="text-danger">Книги нет в наличии.</p>
+                <form asp-action="NotifyWhenAvailable" method="post" class="d-inline">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-info">Напомнить при появлении</button>
+                </form>
+            }
+        }
+        else
+        {
+            <p>Войдите, чтобы забронировать книгу или поставить оценку.</p>
+        }
+
+        <a asp-action="Index" class="btn btn-secondary mt-2">Назад к списку</a>
+    </div>
+</div>
+
+<!-- Комментарии -->
+<h3 class="mt-4">Комментарии</h3>
+@if (Model.Comments != null && Model.Comments.Any())
+{
+    <ul class="list-group">
+        @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
+        {
+            <li class="list-group-item">
+                <strong>@comment.User.Name</strong> (@comment.CreatedAt.ToString("dd.MM.yyyy HH:mm"))<br />
+                @comment.Text
+                <div class="mt-2">
+                    <span class="badge bg-success">Лайки: @comment.Likes</span>
+                    <span class="badge bg-danger">Дизлайки: @comment.Dislikes</span>
+                    <span class="badge bg-warning">Жалобы: @comment.ReportCount</span>
+                </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="mt-2">
+                        <form asp-action="LikeComment" method="post" class="d-inline">
+                            <input type="hidden" name="commentId" value="@comment.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-success">Лайк</button>
+                        </form>
+                        <form asp-action="DislikeComment" method="post" class="d-inline">
+                            <input type="hidden" name="commentId" value="@comment.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Дизлайк</button>
+                        </form>
+                        @if (!ViewBag.ReportedComments.Contains(comment.Id))
+                        {
+                            <form asp-action="ReportComment" method="post" class="d-inline">
+                                <input type="hidden" name="commentId" value="@comment.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-warning">Пожаловаться</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Вы уже пожаловались</span>
+                        }
+                    </div>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Комментариев пока нет.</p>
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <form asp-action="AddComment" method="post" class="mt-3">
+        <input type="hidden" name="bookId" value="@Model.Id" />
+        <div class="form-group">
+            <label>Оставить комментарий:</label>
+            <textarea name="text" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Отправить</button>
+    </form>
+}
